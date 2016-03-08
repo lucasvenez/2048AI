@@ -226,10 +226,10 @@ Player2048.prototype.simulate = function(c, initial, end, increment, shift, F1,
 
 		if (availableCells.length)
 			current[availableCells[Math.floor(Math.random()
-					* availableCells.length)]] = Math.random() < 0.9 ? 2 : 4;
+					* availableCells.length)]] = 2;
 	}
 
-	return [ current.slice(0), totalMerged ];
+	return [current.slice(0), totalMerged];
 };
 
 Player2048.prototype.estimateState = function(current, move) {
@@ -237,26 +237,28 @@ Player2048.prototype.estimateState = function(current, move) {
 	var sim = this.simulateScore(current, move);
 	
 	var value = sim[1];
-	var emptyCells = this.getFrequency(0, sim[0]);
-	var maxValue = Math.max.apply(Math, sim[0]);
-	var ccc = (sim[0]).indexOf(maxValue) == 0 || (sim[0]).indexOf(maxValue) == 12 ? maxValue : 0;
 	
-	return value + emptyCells + maxValue + ccc;
+	var emptyCells = this.getFrequency(0, sim[0]);
+	
+	return value + emptyCells;
 };
 
 Player2048.prototype.estimateStateInDepth = function(current, depth) {
 
-	var up = this.simulateUp(current.slice(0));
-	var left = this.simulateLeft(current.slice(0));
-	var down = this.simulateDown(current.slice(0));
+	var up    = this.simulateUp(current.slice(0));
+	
+	var left  = this.simulateLeft(current.slice(0));
+	
+	var down  = this.simulateDown(current.slice(0));
+	
 	var right = this.simulateRight(current.slice(0));
 
 	if (depth <= 1) {
 
-		var r = [!this.isEquals(up, current)  ? this.estimateState(current, 1) : -8196,
-				!this.isEquals(left, current) ? this.estimateState(current, 2) : -8196, 
-				!this.isEquals(down, current) ? this.estimateState(current, 3) : -8196,
-				!this.isEquals(right, current) ? this.estimateState(current, 4) : -8196];
+		var r = [!this.isEquals(up, current)    ? this.estimateState(current, 1) : -8196,
+				 !this.isEquals(left, current)  ? this.estimateState(current, 2) : -8196, 
+				 !this.isEquals(down, current)  ? this.estimateState(current, 3) : -8196,
+				 !this.isEquals(right, current) ? this.estimateState(current, 4) : -8196];
 
 		return r;
 
@@ -296,28 +298,22 @@ Player2048.prototype.play = function() {
 		var values = self.estimateStateInDepth(self.getCurrentState(), 7);
 
 		var max = Math.max.apply(Math, values);
+		
 		console.log(values);
+		
 		self.move(values.indexOf(max) + 1);
-
-		if (self.getCurrentState().indexOf(2048) > -1) {
 		
-			var evt =  document.createEvent("HTMLEvents");
-			evt.initEvent("click", true, true );
-		
-			document.getElementsByClassName("keep-playing-button")[0].dispatchEvent(evt);
-		}
-		
-		if (self.hasPossibleMoves(self.getCurrentState())) {
-			self.play();	
-		}
+		if (self.hasPossibleMoves(self.getCurrentState()) && 
+				self.getCurrentState().indexOf(2048) < 0)
+			self.play();
 
 	}, 100);
 };
 
 Player2048.prototype.hasPossibleMoves = function(current) {
 
-	var a = [ this.simulateUp(current), this.simulateLeft(current),
-			this.simulateDown(current), this.simulateRight(current) ];
+	var a = [this.simulateUp(current),   this.simulateLeft(current),
+			 this.simulateDown(current), this.simulateRight(current)];
 
 	for (var i = 0; i < a.length; i++) {
 
