@@ -176,8 +176,7 @@ Player2048.prototype.simulateScore = function(current, move) {
 	}
 }
 
-Player2048.prototype.simulate = function(c, initial, end, increment, shift, F1,
-		F2) {
+Player2048.prototype.simulate = function(c, initial, end, increment, shift, F1, F2) {
 
 	var current = c.slice();
 
@@ -219,21 +218,18 @@ Player2048.prototype.simulate = function(c, initial, end, increment, shift, F1,
 		}
 	}
 
-	if (!this.isEquals(current, c)) {
-		for (var i = 0; i < current.length; i++)
-			if (current[i] == 0)
-				availableCells.push(i)
-
-		if (availableCells.length)
-			current[availableCells[Math.floor(Math.random()
-					* availableCells.length)]] = 2;
-	}
-
 	return [current.slice(0), totalMerged];
 };
 
 Player2048.prototype.estimateState = function(current, move) {
 
+	
+	var min = 0;
+	
+	var max = 0;
+	
+	var index = this.getIndexWithZero(current);
+	
 	var sim = this.simulateScore(current, move);
 	
 	var value = sim[1];
@@ -348,6 +344,17 @@ Player2048.prototype.getFrequency = function(e, a) {
 
 	return f;
 };
+
+Player2048.prototype.getIndexWithZero = function(a) {
+	
+	var f = [];
+
+	for (var i = 0; i < a.length; i++)
+		if (a[i] == 0)
+			f.push(i);
+
+	return f;
+}
 
 var player = new Player2048(4);
 
