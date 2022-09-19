@@ -226,10 +226,16 @@ Player2048.prototype.simulate = function(c, initial, end, increment, shift, F1,
 
 		if (availableCells.length)
 			current[availableCells[Math.floor(Math.random()
-					* availableCells.length)]] = 2;
+					* availableCells.length)]] = this.getNumber();
 	}
 
 	return [current.slice(0), totalMerged];
+};
+
+Player2048.prototype.getNumber = function() {
+	if (Math.random() <= .75)
+		return 2;
+	return 4;
 };
 
 Player2048.prototype.estimateState = function(current, move) {
